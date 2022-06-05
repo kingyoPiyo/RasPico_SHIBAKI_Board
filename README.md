@@ -10,3 +10,4 @@ Raspberry Pi Pico で色々やる基板です。
 
 ## 開発環境
 - KiCad Version 6.0.5
+- Raspberry Pi Pico 3D model and Footprint : [KiCad-RP-Pico](https://github.com/ncarandini/KiCad-RP-Pico "KiCad-RP-Pico")
