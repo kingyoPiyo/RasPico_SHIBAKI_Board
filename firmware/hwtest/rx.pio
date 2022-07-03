@@ -1,0 +1,84 @@
+;*******************************************************
+; Title    : 10bit Deserializer & Clock recovery
+; Date     : 2022/07/3
+; Design   : kingyo
+;*******************************************************
+
+.program rx10b
+; An 10bit receive program
+; Run at 250MHz
+; Serial speed 10Mbps (100ns)
+
+start:
+    wait 0 pin 0
+    wait 1 pin 0
+
+wait_low1:                  
+    nop [5]                 ; delay 1/4 bit
+wait_low2:                  ; 1Loop = 25cycle (100ns)
+    nop [12]
+    in PINS,1   [12]        ; High
+    jmp PIN wait_low2
+    
+wait_high:                  ; 1Loop = 25cycle (100ns)
+    in PINS,1               ; input Low
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp PIN wait_low1
+    jmp wait_high
+
+
+
+% c-sdk {
+#include "hardware/clocks.h"
+#include "hardware/gpio.h"
+#include <stdint.h>
+
+static inline void rx10b_program_init(PIO pio, uint sm, uint offset, uint pin) {
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, false);
+    pio_gpio_init(pio, pin);
+    gpio_pull_up(pin);
+
+    pio_sm_config c = rx10b_program_get_default_config(offset);
+    sm_config_set_in_pins(&c, pin); // for WAIT, IN
+    sm_config_set_jmp_pin(&c, pin); // for JMP
+
+    // Shift to left, autopush enabled
+    sm_config_set_in_shift(&c, false, true, 10);
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+
+    sm_config_set_clkdiv(&c, 1);
+    
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+
+static inline uint32_t rx10b_program_get10b(PIO pio, uint sm) {
+    // 10-bit read from the uppermost byte of the FIFO, as data is left-justified
+    io_rw_32 *rxfifo_shift = (io_rw_32*)&pio->rxf[sm];
+    while (pio_sm_is_rx_fifo_empty(pio, sm))
+        tight_loop_contents();
+    return (uint32_t)*rxfifo_shift;
+}
+
+%}
