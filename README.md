@@ -15,6 +15,7 @@ Raspberry Pi Pico で色々やる基板です。
 <img src="doc/pcb_top.png" width="500">  
 <img src="doc/pcb_bottom.png" width="500">  
 <img src="doc/pcb_size.png" width="500">  
+<img src="doc/SHIBAKIs.jpg" width="500">  
 
 ## サンプルソフトウェア（準備中・・・）
 本ボードで遊べるサンプルプログラムです。  
