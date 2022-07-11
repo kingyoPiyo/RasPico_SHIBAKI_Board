@@ -41,8 +41,7 @@ void udp_init(void)
 void udp_packet_init(uint32_t *buf, uint32_t in_data)
 {
     // Etherent Frame
-    //const uint64_t    dst_mac     = 0xFFFFFFFFFFFF; // L2 Broadcast
-    const uint64_t    dst_mac     = 0xF02F74DA2CE8; // kingyoAMD
+    const uint64_t    dst_mac     = 0xFFFFFFFFFFFF; // L2 Broadcast
     const uint64_t    src_mac     = 0x123456789ABC; // Dummyr
     const uint16_t    eth_type    = 0x0800;         // IP
 
