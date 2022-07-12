@@ -17,7 +17,7 @@ Raspberry Pi Pico で色々やる基板です。
 <img src="doc/pcb_size.png" width="500">  
 <img src="doc/SHIBAKIs.jpg" width="500">  
 
-## サンプルソフトウェア（準備中・・・）
+## サンプルソフトウェア
 本ボードで遊べるサンプルプログラムです。  
 100BASE-FX による UDP 送信例、VBAN プロトコルによる PCM データ送信、SFP モジュール情報読み出し、8b10b エンコード・デコード（PIO を使った SerDes with Clockrecovery）等を追々追加していく予定です。  
 | Link | 説明 |
