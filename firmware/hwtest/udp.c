@@ -50,21 +50,9 @@ void udp_packet_gen(uint32_t *buf, uint8_t *udp_payload)
     const uint8_t     ip_type_of_service  = 0;
     const uint16_t    ip_total_len        = 20 + DEF_UDP_LEN;
 
-    // IP src address
-    const uint8_t     ip_adr_src1         = DEF_IP_ADR_SRC1;
-    const uint8_t     ip_adr_src2         = DEF_IP_ADR_SRC2;
-    const uint8_t     ip_adr_src3         = DEF_IP_ADR_SRC3;
-    const uint8_t     ip_adr_src4         = DEF_IP_ADR_SRC4;
-
-    // IP dest address
-    const uint8_t     ip_adr_dst1         = DEF_IP_DST_DST1;
-    const uint8_t     ip_adr_dst2         = DEF_IP_DST_DST2;
-    const uint8_t     ip_adr_dst3         = DEF_IP_DST_DST3;
-    const uint8_t     ip_adr_dst4         = DEF_IP_DST_DST4;
-
     // Calculate the ip check sum
-    const uint32_t    ip_chk_sum1 = 0x0000C512 + ip_identifier + ip_total_len + (ip_adr_src1 << 8) + ip_adr_src2 + (ip_adr_src3 << 8) + ip_adr_src4 +
-                                    (ip_adr_dst1 << 8) + ip_adr_dst2 + (ip_adr_dst3 << 8) + ip_adr_dst4;
+    const uint32_t    ip_chk_sum1 = 0x0000C512 + ip_identifier + ip_total_len + (DEF_IP_ADR_SRC1 << 8) + DEF_IP_ADR_SRC2 + (DEF_IP_ADR_SRC3 << 8) + DEF_IP_ADR_SRC4 +
+                                    (DEF_IP_DST_DST1 << 8) + DEF_IP_DST_DST2 + (DEF_IP_DST_DST3 << 8) + DEF_IP_DST_DST4;
     const uint32_t    ip_chk_sum2 = (ip_chk_sum1 & 0x0000FFFF) + (ip_chk_sum1 >> 16);
     const uint32_t    ip_chk_sum3 = ~((ip_chk_sum2 & 0x0000FFFF) + (ip_chk_sum2 >> 16));
 
@@ -138,23 +126,23 @@ void udp_packet_gen(uint32_t *buf, uint8_t *udp_payload)
     data_4b[idx++] = (ip_chk_sum3 >>  0) & 0x0F;
     data_4b[idx++] = (ip_chk_sum3 >>  4) & 0x0F;
     // IP Source
-    data_4b[idx++] = (ip_adr_src1 >>  0) & 0x0F;
-    data_4b[idx++] = (ip_adr_src1 >>  4) & 0x0F;
-    data_4b[idx++] = (ip_adr_src2 >>  0) & 0x0F;
-    data_4b[idx++] = (ip_adr_src2 >>  4) & 0x0F;
-    data_4b[idx++] = (ip_adr_src3 >>  0) & 0x0F;
-    data_4b[idx++] = (ip_adr_src3 >>  4) & 0x0F;
-    data_4b[idx++] = (ip_adr_src4 >>  0) & 0x0F;
-    data_4b[idx++] = (ip_adr_src4 >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_IP_ADR_SRC1 >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_IP_ADR_SRC1 >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_IP_ADR_SRC2 >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_IP_ADR_SRC2 >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_IP_ADR_SRC3 >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_IP_ADR_SRC3 >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_IP_ADR_SRC4 >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_IP_ADR_SRC4 >>  4) & 0x0F;
     // IP Destination
-    data_4b[idx++] = (ip_adr_dst1 >>  0) & 0x0F;
-    data_4b[idx++] = (ip_adr_dst1 >>  4) & 0x0F;
-    data_4b[idx++] = (ip_adr_dst2 >>  0) & 0x0F;
-    data_4b[idx++] = (ip_adr_dst2 >>  4) & 0x0F;
-    data_4b[idx++] = (ip_adr_dst3 >>  0) & 0x0F;
-    data_4b[idx++] = (ip_adr_dst3 >>  4) & 0x0F;
-    data_4b[idx++] = (ip_adr_dst4 >>  0) & 0x0F;
-    data_4b[idx++] = (ip_adr_dst4 >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_IP_DST_DST1 >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_IP_DST_DST1 >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_IP_DST_DST2 >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_IP_DST_DST2 >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_IP_DST_DST3 >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_IP_DST_DST3 >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_IP_DST_DST4 >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_IP_DST_DST4 >>  4) & 0x0F;
     // UDP header
     data_4b[idx++] = (DEF_UDP_SRC_PORTNUM >>  8) & 0x0F;
     data_4b[idx++] = (DEF_UDP_SRC_PORTNUM >> 12) & 0x0F;
