@@ -13,11 +13,9 @@ const static uint32_t tbl_nrzi[64] = {
         };
 
 static uint32_t crc_table[256];
-static uint8_t  data_4b[DEF_TX_BUF_SIZE*2];
-static uint8_t  data_5b[(DEF_TX_BUF_SIZE*2)+4];
+static uint8_t  data_4b[DEF_UDP_BUF_SIZE*2];
+static uint8_t  data_5b[(DEF_UDP_BUF_SIZE*2)+4];
 static uint16_t ip_identifier;
-static uint32_t crc_memo;
-static uint8_t ob_memo;
 
 
 static void _make_crc_table(void)
@@ -38,37 +36,31 @@ void udp_init(void)
 }
 
 
-void udp_packet_init(uint32_t *buf, uint32_t in_data)
+void udp_packet_gen(uint32_t *buf, uint8_t *udp_payload)
 {
     // Etherent Frame
-    const uint64_t    dst_mac     = 0xFFFFFFFFFFFF; // L2 Broadcast
-    const uint64_t    src_mac     = 0x123456789ABC; // Dummyr
-    const uint16_t    eth_type    = 0x0800;         // IP
+    const uint16_t    eth_type            = 0x0800; // IP
 
     // UDP Header
-    const uint16_t    udp_src_port_num    = 1024;   //
-    const uint16_t    udp_dst_port_num    = 1024;   //
-    const uint16_t    udp_payload_len     = 970;    // 18 octet
-    const uint16_t    udp_len             = 8 + udp_payload_len;  // UDP Header(8) + Payload octet
     const uint16_t    udp_chksum          = 0;      // not use
 
     // IPv4 Header
     const uint8_t     ip_version          = 4;      // IP v4
     const uint8_t     ip_head_len         = 5;
     const uint8_t     ip_type_of_service  = 0;
-    const uint16_t    ip_total_len        = 20 + udp_len;
+    const uint16_t    ip_total_len        = 20 + DEF_UDP_LEN;
 
     // IP src address
-    const uint8_t     ip_adr_src1         = 192;    // Dummy
-    const uint8_t     ip_adr_src2         = 168;
-    const uint8_t     ip_adr_src3         = 37;
-    const uint8_t     ip_adr_src4         = 24;
+    const uint8_t     ip_adr_src1         = DEF_IP_ADR_SRC1;
+    const uint8_t     ip_adr_src2         = DEF_IP_ADR_SRC2;
+    const uint8_t     ip_adr_src3         = DEF_IP_ADR_SRC3;
+    const uint8_t     ip_adr_src4         = DEF_IP_ADR_SRC4;
 
     // IP dest address
-    const uint8_t     ip_adr_dst1         = 192;    // Dummy
-    const uint8_t     ip_adr_dst2         = 168;
-    const uint8_t     ip_adr_dst3         = 37;
-    const uint8_t     ip_adr_dst4         = 19;
+    const uint8_t     ip_adr_dst1         = DEF_IP_DST_DST1;
+    const uint8_t     ip_adr_dst2         = DEF_IP_DST_DST2;
+    const uint8_t     ip_adr_dst3         = DEF_IP_DST_DST3;
+    const uint8_t     ip_adr_dst4         = DEF_IP_DST_DST4;
 
     // Calculate the ip check sum
     const uint32_t    ip_chk_sum1 = 0x0000C512 + ip_identifier + ip_total_len + (ip_adr_src1 << 8) + ip_adr_src2 + (ip_adr_src3 << 8) + ip_adr_src4 +
@@ -89,31 +81,31 @@ void udp_packet_init(uint32_t *buf, uint32_t in_data)
     // SFD
     data_4b[idx++] = 0x0d;
     // Destination MAC Address
-    data_4b[idx++] = (dst_mac >> 40) & 0x0F;
-    data_4b[idx++] = (dst_mac >> 44) & 0x0F;
-    data_4b[idx++] = (dst_mac >> 32) & 0x0F;
-    data_4b[idx++] = (dst_mac >> 36) & 0x0F;
-    data_4b[idx++] = (dst_mac >> 24) & 0x0F;
-    data_4b[idx++] = (dst_mac >> 28) & 0x0F;
-    data_4b[idx++] = (dst_mac >> 16) & 0x0F;
-    data_4b[idx++] = (dst_mac >> 20) & 0x0F;
-    data_4b[idx++] = (dst_mac >>  8) & 0x0F;
-    data_4b[idx++] = (dst_mac >> 12) & 0x0F;
-    data_4b[idx++] = (dst_mac >>  0) & 0x0F;
-    data_4b[idx++] = (dst_mac >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 40) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 44) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 32) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 36) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 24) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 28) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 16) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 20) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >>  8) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >> 12) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_DST_MAC >>  4) & 0x0F;
     // Source MAC Address
-    data_4b[idx++] = (src_mac >> 40) & 0x0F;
-    data_4b[idx++] = (src_mac >> 44) & 0x0F;
-    data_4b[idx++] = (src_mac >> 32) & 0x0F;
-    data_4b[idx++] = (src_mac >> 36) & 0x0F;
-    data_4b[idx++] = (src_mac >> 24) & 0x0F;
-    data_4b[idx++] = (src_mac >> 28) & 0x0F;
-    data_4b[idx++] = (src_mac >> 16) & 0x0F;
-    data_4b[idx++] = (src_mac >> 20) & 0x0F;
-    data_4b[idx++] = (src_mac >>  8) & 0x0F;
-    data_4b[idx++] = (src_mac >> 12) & 0x0F;
-    data_4b[idx++] = (src_mac >>  0) & 0x0F;
-    data_4b[idx++] = (src_mac >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 40) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 44) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 32) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 36) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 24) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 28) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 16) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 20) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >>  8) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >> 12) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_ETH_SRC_MAC >>  4) & 0x0F;
     // Ethernet Type
     data_4b[idx++] = (eth_type >>  8) & 0x0F;
     data_4b[idx++] = (eth_type >> 12) & 0x0F;
@@ -164,34 +156,26 @@ void udp_packet_init(uint32_t *buf, uint32_t in_data)
     data_4b[idx++] = (ip_adr_dst4 >>  0) & 0x0F;
     data_4b[idx++] = (ip_adr_dst4 >>  4) & 0x0F;
     // UDP header
-    data_4b[idx++] = (udp_src_port_num >>  8) & 0x0F;
-    data_4b[idx++] = (udp_src_port_num >> 12) & 0x0F;
-    data_4b[idx++] = (udp_src_port_num >>  0) & 0x0F;
-    data_4b[idx++] = (udp_src_port_num >>  4) & 0x0F;
-    data_4b[idx++] = (udp_dst_port_num >>  8) & 0x0F;
-    data_4b[idx++] = (udp_dst_port_num >> 12) & 0x0F;
-    data_4b[idx++] = (udp_dst_port_num >>  0) & 0x0F;
-    data_4b[idx++] = (udp_dst_port_num >>  4) & 0x0F;
-    data_4b[idx++] = (udp_len >>  8) & 0x0F;
-    data_4b[idx++] = (udp_len >> 12) & 0x0F;
-    data_4b[idx++] = (udp_len >>  0) & 0x0F;
-    data_4b[idx++] = (udp_len >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_SRC_PORTNUM >>  8) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_SRC_PORTNUM >> 12) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_SRC_PORTNUM >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_SRC_PORTNUM >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_DST_PORTNUM >>  8) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_DST_PORTNUM >> 12) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_DST_PORTNUM >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_DST_PORTNUM >>  4) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_LEN >>  8) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_LEN >> 12) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_LEN >>  0) & 0x0F;
+    data_4b[idx++] = (DEF_UDP_LEN >>  4) & 0x0F;
     data_4b[idx++] = (udp_chksum >>  8) & 0x0F;
     data_4b[idx++] = (udp_chksum >> 12) & 0x0F;
     data_4b[idx++] = (udp_chksum >>  0) & 0x0F;
     data_4b[idx++] = (udp_chksum >>  4) & 0x0F;
-    // UDP payload(32bit + Padding112bit = 144bit)
-    // data_4b[idx++] = (in_data >> 24) & 0x0F;
-    // data_4b[idx++] = (in_data >> 28) & 0x0F;
-    // data_4b[idx++] = (in_data >> 16) & 0x0F;
-    // data_4b[idx++] = (in_data >> 20) & 0x0F;
-    // data_4b[idx++] = (in_data >>  8) & 0x0F;
-    // data_4b[idx++] = (in_data >> 12) & 0x0F;
-    // data_4b[idx++] = (in_data >>  0) & 0x0F;
-    // data_4b[idx++] = (in_data >>  4) & 0x0F;
-    // Padding
-    for (i = 0; i < (udp_payload_len * 2); i++) {
-        data_4b[idx++] = 0;
+    // UDP payload
+    for (i = 0; i < DEF_UDP_PAYLOAD_SIZE; i++) {
+        data_4b[idx++] = *(udp_payload + i) & 0x0F;
+        data_4b[idx++] = (*(udp_payload + i) >> 4) & 0x0F;
     }
 
     ///////////////////////////////////////////////////
@@ -200,10 +184,6 @@ void udp_packet_init(uint32_t *buf, uint32_t in_data)
     uint32_t crc = 0xffffffff;
     for (i = 16; i < idx; i+=2) {
         crc = (crc >> 8) ^ crc_table[(crc ^ ((data_4b[i+1] << 4) + data_4b[i])) & 0xFF];
-
-        if (i == (80 + udp_payload_len)) {
-            crc_memo = crc;
-        }
     }
     crc ^= 0xffffffff;
 
@@ -232,60 +212,11 @@ void udp_packet_init(uint32_t *buf, uint32_t in_data)
     /////////////////////////////////////////////////
     // NRZI Encoder
     /////////////////////////////////////////////////
-    for (i = 0, j = 0, ob = ob_memo; i < (DEF_TX_BUF_SIZE*2)+4; i += 2) {
-        ans  = tbl_nrzi[(ob << 5) + data_5b[i]];
-        ans |= tbl_nrzi[((ans >> 4) << 5) + data_5b[i+1]] << 5;
-        ob = ans >> 9;
-        buf[j++] = ans;
-
-        if (i == (80 + udp_payload_len)) {
-            ob_memo = ob;
-        }
-    }
-}
-
-
-void udp_payload_update(uint32_t *buf, uint32_t in_data)
-{
-    uint8_t     ob;
-    uint32_t    i, j, ans;
-
-    // UDP payload(32bit + Padding112bit = 144bit)
-    data_4b[100] = (in_data >> 24) & 0x0F;
-    data_4b[101] = (in_data >> 28) & 0x0F;
-    data_4b[102] = (in_data >> 16) & 0x0F;
-    data_4b[103] = (in_data >> 20) & 0x0F;
-    data_4b[104] = (in_data >>  8) & 0x0F;
-    data_4b[105] = (in_data >> 12) & 0x0F;
-    data_4b[106] = (in_data >>  0) & 0x0F;
-    data_4b[107] = (in_data >>  4) & 0x0F;
-
-    // FCS Calc
-    uint32_t crc = crc_memo;
-    for (i = 100; i < 136; i+=2) {
-        crc = (crc >> 8) ^ crc_table[(crc ^ ((data_4b[i+1] << 4) + data_4b[i])) & 0xFF];
-    }
-    crc ^= 0xffffffff;
-
-    data_4b[136] = (crc >>  0) & 0xF;
-    data_4b[137] = (crc >>  4) & 0xF;
-    data_4b[138] = (crc >>  8) & 0xF;
-    data_4b[139] = (crc >> 12) & 0xF;
-    data_4b[140] = (crc >> 16) & 0xF;
-    data_4b[141] = (crc >> 20) & 0xF;
-    data_4b[142] = (crc >> 24) & 0xF;
-    data_4b[143] = (crc >> 28) & 0xF;
-
-    // Encording 4b5b
-    for (i = 100; i < 144; i++) {
-        data_5b[i] = tbl_4b5b[data_4b[i]];
-    }
-
-    // NRZI Encoder
-    for (i = 100, j = 50, ob = ob_memo; i < (DEF_TX_BUF_SIZE*2)+4; i += 2) {
+    for (i = 0, j = 0, ob = 0; i < (DEF_UDP_BUF_SIZE*2)+4; i += 2) {
         ans  = tbl_nrzi[(ob << 5) + data_5b[i]];
         ans |= tbl_nrzi[((ans >> 4) << 5) + data_5b[i+1]] << 5;
         ob = ans >> 9;
         buf[j++] = ans;
     }
 }
+

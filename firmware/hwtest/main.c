@@ -48,8 +48,8 @@ static void __time_critical_func(ser_10b_irq)(void)
 int main()
 {
     uint32_t DMA_SER_WR0;
-    uint32_t tx_buf_udp[DEF_TX_BUF_SIZE+2];
-    uint32_t buf_sel = 0;
+    uint32_t tx_buf_udp[DEF_UDP_BUF_SIZE+2] = {0};
+    uint8_t udp_payload[DEF_UDP_PAYLOAD_SIZE] = {0};
     uint32_t lp_cnt = 0;
     uint offset = 0;
 
@@ -76,7 +76,8 @@ int main()
 
     // UDP
     udp_init();
-    udp_packet_init(tx_buf_udp, lp_cnt);
+    sprintf(udp_payload, "Hello RasPico SHIBAKI Board !!");
+    udp_packet_gen(tx_buf_udp, udp_payload);
 
     // DMA channel setting(SFP0)
     DMA_SER_WR0 = dma_claim_unused_channel(true);
@@ -90,7 +91,7 @@ int main()
         &c0,                    // The configuration we just created
         &pio_ser_wr->txf[0],    // Destination address
         tx_buf_udp,             // Source address
-        (DEF_TX_BUF_SIZE+2),    // Number of transfers
+        (DEF_UDP_BUF_SIZE+2),   // Number of transfers
         false                   // Don't start yet
     );
     
@@ -102,14 +103,13 @@ int main()
 
             gpio_put(HW_PINNUM_LED0, true);
 
-            // DMA Start
-            dma_channel_set_read_addr(DMA_SER_WR0, tx_buf_udp, true);
-
             // UDP Packet update
             lp_cnt++;
-            //udp_payload_update(tx_buf[1-buf_sel], lp_cnt);
-            //udp_packet_init(tx_buf[1-buf_sel], lp_cnt);
-            printf("SFP0 Packet Send!! lp_cnt:%d\r\n", lp_cnt);
+            sprintf(udp_payload, "Hello RasPico SHIBAKI Board !! lp_cnt:%d", lp_cnt);
+            udp_packet_gen(tx_buf_udp, udp_payload);
+
+            // DMA Start
+            dma_channel_set_read_addr(DMA_SER_WR0, tx_buf_udp, true);
 
             // Wait for DMA
             dma_channel_wait_for_finish_blocking(DMA_SER_WR0);
@@ -119,11 +119,7 @@ int main()
             gpio_put(HW_PINNUM_LED0, false);
         }
 
-
         // Loop wait
         sleep_us(1000);
-
-        // TX Buffer change
-        buf_sel = 1 - buf_sel;
     }
 }
