@@ -28,7 +28,7 @@ Raspberry Pi Pico で色々やる基板です。
 [Schematic.pdf](doc/schematic.pdf "Schematic")
 
 ## 既知のバグ
-[doc\Rev1.0_Jumper.png](doc\Rev1.0_Jumper.png "Rev1.0_Jumper.png") 参照
+[doc/Rev1.0_Jumper.png](doc/Rev1.0_Jumper.png "Rev1.0_Jumper.png") 参照
 * SFP0_SCLとSFP0_SDAのピンアサインを入れ替える必要あり
 * SFP1_SCLがI2C1_SCLに、SFP1_SDAがI2C0_SDAに割りあたっており、配線修正必要
 
