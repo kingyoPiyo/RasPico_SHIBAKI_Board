@@ -22,9 +22,9 @@ void hw_init()
     gpio_set_dir(HW_PINNUM_SFP0_RXD, GPIO_IN);
     gpio_init(HW_PINNUM_SFP0_TXD);
     gpio_set_dir(HW_PINNUM_SFP0_TXD, GPIO_OUT);
-    i2c_init(i2c_default, 100 * 1000);
-    gpio_set_function(HW_PINNUM_SFP0_SDA, GPIO_FUNC_I2C);
-    gpio_set_function(HW_PINNUM_SFP0_SCL, GPIO_FUNC_I2C);
+    // i2c_init(i2c_default, 100000);
+    // gpio_set_function(HW_PINNUM_SFP0_SDA, GPIO_FUNC_I2C);
+    // gpio_set_function(HW_PINNUM_SFP0_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(HW_PINNUM_SFP0_SDA);
     gpio_pull_up(HW_PINNUM_SFP0_SCL);
     gpio_init(HW_PINNUM_SFP0_TXFLT);
@@ -40,9 +40,9 @@ void hw_init()
     gpio_set_dir(HW_PINNUM_SFP1_RXD, GPIO_IN);
     gpio_init(HW_PINNUM_SFP1_TXD);
     gpio_set_dir(HW_PINNUM_SFP1_TXD, GPIO_OUT);
-    i2c_init(i2c_default, 100 * 1000);
-    gpio_set_function(HW_PINNUM_SFP1_SDA, GPIO_FUNC_I2C);
-    gpio_set_function(HW_PINNUM_SFP1_SCL, GPIO_FUNC_I2C);
+    // i2c_init(i2c_default, 100000);
+    // gpio_set_function(HW_PINNUM_SFP1_SDA, GPIO_FUNC_I2C);
+    // gpio_set_function(HW_PINNUM_SFP1_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(HW_PINNUM_SFP1_SDA);
     gpio_pull_up(HW_PINNUM_SFP1_SCL);
     gpio_init(HW_PINNUM_SFP1_TXFLT);
