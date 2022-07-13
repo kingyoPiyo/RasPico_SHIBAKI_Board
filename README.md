@@ -27,6 +27,10 @@ Raspberry Pi Pico で色々やる基板です。
 ## 回路図
 [Schematic.pdf](doc/schematic.pdf "Schematic")
 
+## 既知のバグ
+* SFP0_SCLとSFP0_SDAのピンアサインを入れ替える必要あり
+* SFP1_SCLがI2C1_SCLに、SFP1_SDAがI2C0_SDAに割りあたっており、配線修正必要
+
 ## 開発環境
 - KiCad Version 6.0.5
 - Raspberry Pi Pico 3D model and Footprint : [KiCad-RP-Pico](https://github.com/ncarandini/KiCad-RP-Pico "KiCad-RP-Pico")
