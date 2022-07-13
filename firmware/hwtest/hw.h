@@ -4,8 +4,8 @@
 // SFP0
 #define HW_PINNUM_SFP0_RXD      (10)
 #define HW_PINNUM_SFP0_TXD      (11)
-#define HW_PINNUM_SFP0_SCL      (12)
-#define HW_PINNUM_SFP0_SDA      (13)
+#define HW_PINNUM_SFP0_SCL      (13)
+#define HW_PINNUM_SFP0_SDA      (12)
 #define HW_PINNUM_SFP0_TXFLT    (14)
 #define HW_PINNUM_SFP0_RXLOS    (15)
 
@@ -13,9 +13,9 @@
 #define HW_PINNUM_SFP1_RXD      (4)
 #define HW_PINNUM_SFP1_TXD      (5)
 #define HW_PINNUM_SFP1_SCL      (7)
-#define HW_PINNUM_SFP1_SDA      (8)
+#define HW_PINNUM_SFP1_SDA      (6)
 #define HW_PINNUM_SFP1_TXFLT    (9)
-#define HW_PINNUM_SFP1_RXLOS    (6)
+#define HW_PINNUM_SFP1_RXLOS    (8)
 
 // SMA I/O
 #define HW_PINNUM_SMAIN0        (3)

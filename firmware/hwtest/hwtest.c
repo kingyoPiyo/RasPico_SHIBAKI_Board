@@ -2,6 +2,8 @@
 #include "pico/stdlib.h"
 #include <stdint.h>
 #include "hw.h"
+#include "hardware/i2c.h"
+
 
 static struct repeating_timer timer;
 
@@ -17,6 +19,35 @@ static bool repeating_timer_callback(struct repeating_timer *t)
     return true;
 }
 
+// Read SFP I2C EEPROM, Address = 0x50
+static void read_i2c_data(i2c_inst_t *i2c)
+{
+    uint8_t read_buf[256] = {0};
+    uint32_t x = 0, y = 0;
+    uint8_t tmp;
+
+    i2c_read_blocking(i2c, 0x50, read_buf, 256, false);
+
+    printf(" 0x50 0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f    0123456789abcdef\r\n");
+    for (y = 0; y < 16; y++) {
+        printf(" %02x: ", y << 4);
+        for (x = 0; x < 16; x++) {
+            printf("%02x ", read_buf[(y << 4) + x]);
+        }
+        printf("   ");
+        for (x = 0; x < 16; x++) {
+            tmp = read_buf[(y << 4) + x];
+            if (tmp >= 0x20 && tmp <= 0x7E) {
+                printf("%c", tmp);
+            } else {
+                printf(".");
+            }
+        }
+        printf("\r\n");
+    }
+}
+
+// Read GPIO Level
 static void uart_debug_output(void)
 {
     uint32_t io_status_now;
@@ -45,34 +76,31 @@ static void uart_debug_output(void)
     {
         printf("\033[H\033[2J");
         printf("## RasPico SHIBAKI Board  Demo firmware ##\r\n");
-        printf("\r\n");
 
         // SFP Status
-        printf("#### SFP Status ####\r\n");
         printf("SFP0\r\n");
         io_status_now & (1 << 0)    ? printf(" TXFLT   : High\r\n") : printf(" TXFLT   : Low\r\n");
         io_status_now & (1 << 1)    ? printf(" RXLOS   : High\r\n") : printf(" RXLOS   : Low\r\n");
         io_status_now & (1 << 2)    ? printf(" SCL     : High\r\n") : printf(" SCL     : Low\r\n");
         io_status_now & (1 << 3)    ? printf(" SDA     : High\r\n") : printf(" SDA     : Low\r\n");
+        read_i2c_data(i2c0);
         printf("SFP1\r\n");
         io_status_now & (1 << 4)    ? printf(" TXFLT   : High\r\n") : printf(" TXFLT   : Low\r\n");
         io_status_now & (1 << 5)    ? printf(" RXLOS   : High\r\n") : printf(" RXLOS   : Low\r\n");
         io_status_now & (1 << 6)    ? printf(" SCL     : High\r\n") : printf(" SCL     : Low\r\n");
         io_status_now & (1 << 7)    ? printf(" SDA     : High\r\n") : printf(" SDA     : Low\r\n");
+        read_i2c_data(i2c1);
         // SMA Input Status
-        printf("#### SMA Input ####\r\n");
-        io_status_now & (1 << 8)    ? printf(" SMA_IN0 : High\r\n") : printf(" SMA_IN0 : Low\r\n");
-        io_status_now & (1 << 9)    ? printf(" SMA_IN1 : High\r\n") : printf(" SMA_IN1 : Low\r\n");
+        io_status_now & (1 << 8)    ? printf("SMA_IN0  : High\r\n") : printf("SMA_IN0  : Low\r\n");
+        io_status_now & (1 << 9)    ? printf("SMA_IN1  : High\r\n") : printf("SMA_IN1  : Low\r\n");
         // User SW Status
-        printf("#### SW Level ####\r\n");
-        io_status_now & (1 << 10)   ? printf(" SW0     : High\r\n") : printf(" SW0     : Low\r\n");
-        io_status_now & (1 << 11)   ? printf(" SW1     : High\r\n") : printf(" SW1     : Low\r\n");
+        io_status_now & (1 << 10)   ? printf("SW0      : High\r\n") : printf("SW0      : Low\r\n");
+        io_status_now & (1 << 11)   ? printf("SW1      : High\r\n") : printf("SW1      : Low\r\n");
         // GPIO Level
-        printf("#### GPIO Level ####\r\n");
-        io_status_now & (1 << 12)   ? printf(" GPIO16  : High\r\n") : printf(" GPIO16  : Low\r\n");
-        io_status_now & (1 << 13)   ? printf(" GPIO17  : High\r\n") : printf(" GPIO17  : Low\r\n");
-        io_status_now & (1 << 14)   ? printf(" GPIO18  : High\r\n") : printf(" GPIO18  : Low\r\n");
-        io_status_now & (1 << 15)   ? printf(" GPIO19  : High\r\n") : printf(" GPIO19  : Low\r\n");
+        io_status_now & (1 << 12)   ? printf("GPIO16   : High\r\n") : printf("GPIO16   : Low\r\n");
+        io_status_now & (1 << 13)   ? printf("GPIO17   : High\r\n") : printf("GPIO17   : Low\r\n");
+        io_status_now & (1 << 14)   ? printf("GPIO18   : High\r\n") : printf("GPIO18   : Low\r\n");
+        io_status_now & (1 << 15)   ? printf("GPIO19   : High\r\n") : printf("GPIO19   : Low\r\n");
 
         io_status_old = io_status_now;
         sleep_ms(20);
