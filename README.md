@@ -32,7 +32,14 @@ Raspberry Pi Pico で色々やる基板です。
 * SFP0_SCLとSFP0_SDAのピンアサインを入れ替える必要あり
 * SFP1_SCLがI2C1_SCLに、SFP1_SDAがI2C0_SDAに割りあたっており、配線修正必要
 
-
 ## 開発環境
 - KiCad Version 6.0.5
 - Raspberry Pi Pico 3D model and Footprint : [KiCad-RP-Pico](https://github.com/ncarandini/KiCad-RP-Pico "KiCad-RP-Pico")
+
+## pico-sdk install memo
+```
+sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib build-essential
+git clone https://github.com/raspberrypi/pico-sdk
+cd pico-sdk
+git submodule update --init
+```
