@@ -82,6 +82,9 @@ void hw_init()
     gpio_init(HW_PINNUM_LED3);
     gpio_set_dir(HW_PINNUM_LED3, GPIO_OUT);
 
+    gpio_init(HW_PINNUM_LED4);
+    gpio_set_dir(HW_PINNUM_LED4, GPIO_OUT);
+
 
     // SW
     gpio_init(HW_PINNUM_SW0);

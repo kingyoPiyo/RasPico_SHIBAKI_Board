@@ -127,7 +127,7 @@ void __time_critical_func(rx_main)(void)
             // Valid data
             case 0:
                 // Raw PLS OUTPUT
-                gpio_put(HW_PINNUM_LED1, (data_8b & 0x01) && locked);
+                gpio_put(HW_PINNUM_LED3, (data_8b & 0x01) && locked);
 
                 if (!locked && rx_cnt == 0)
                 {

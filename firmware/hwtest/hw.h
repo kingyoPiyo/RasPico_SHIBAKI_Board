@@ -24,10 +24,11 @@
 #define HW_PINNUM_SMAOUT1       (0)
 
 // LEDs
-#define HW_PINNUM_LED0          (22)
-#define HW_PINNUM_LED1          (26)
-#define HW_PINNUM_LED2          (27)
-#define HW_PINNUM_LED3          (28)
+#define HW_PINNUM_LED0          (25)    // Pico onboard
+#define HW_PINNUM_LED1          (22)
+#define HW_PINNUM_LED2          (26)
+#define HW_PINNUM_LED3          (27)
+#define HW_PINNUM_LED4          (28)
 
 // SW
 #define HW_PINNUM_SW0           (20)

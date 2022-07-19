@@ -10,10 +10,10 @@ static struct repeating_timer timer;
 // Timer interrupt (L-tika)
 static bool repeating_timer_callback(struct repeating_timer *t)
 {
-    static bool led3_state = true;
+    static bool led0_state = true;
 
-    gpio_put(HW_PINNUM_LED3, led3_state);
-    led3_state = !led3_state;
+    gpio_put(HW_PINNUM_LED0, led0_state);
+    led0_state = !led0_state;
 
     // true to continue repeating, false to stop.
     return true;
@@ -124,8 +124,11 @@ void hw_test(void)
     gpio_put(HW_PINNUM_LED1, true);
     gpio_put(HW_PINNUM_LED2, true);
     gpio_put(HW_PINNUM_LED3, true);
+    gpio_put(HW_PINNUM_LED4, true);
     sleep_ms(1000);
     // ALL LED OFF
+    gpio_put(HW_PINNUM_LED4, false);
+    sleep_ms(150);
     gpio_put(HW_PINNUM_LED3, false);
     sleep_ms(150);
     gpio_put(HW_PINNUM_LED2, false);

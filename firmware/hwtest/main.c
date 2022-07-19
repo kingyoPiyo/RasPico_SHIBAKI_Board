@@ -33,7 +33,7 @@ static void __time_critical_func(ser_10b_irq)(void)
     gpio_put(HW_PINNUM_SMAOUT1, true);
 
     tx_8b = gpio_get(HW_PINNUM_SW1) ? 0x00 : 0x01;
-    gpio_put(HW_PINNUM_LED1, tx_8b & 0x01);
+    gpio_put(HW_PINNUM_LED2, tx_8b & 0x01);
     if (++cnt_10b == 255) {
         // K28.5
         tx_buf_8b10b = tbl_8b10b_enc(0x00, true);
@@ -101,7 +101,7 @@ int main()
         if (!gpio_get(HW_PINNUM_SW0)) {
             gpio_put(HW_PINNUM_SMAOUT0, true);
 
-            gpio_put(HW_PINNUM_LED0, true);
+            gpio_put(HW_PINNUM_LED1, true);
 
             // UDP Packet update
             lp_cnt++;
@@ -116,7 +116,7 @@ int main()
 
             gpio_put(HW_PINNUM_SMAOUT0, false);
         } else {
-            gpio_put(HW_PINNUM_LED0, false);
+            gpio_put(HW_PINNUM_LED1, false);
         }
 
         // Loop wait
