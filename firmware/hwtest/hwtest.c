@@ -142,7 +142,7 @@ void hw_test(void)
     } while (uart_loop_forever);
 
     // Timer interrupt
-    add_repeating_timer_ms(500, repeating_timer_callback, NULL, &timer);
+    add_repeating_timer_ms(-500, repeating_timer_callback, NULL, &timer);
 
     sleep_ms(1000);
 }
