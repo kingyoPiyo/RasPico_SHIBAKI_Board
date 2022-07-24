@@ -1,0 +1,58 @@
+;***************************************************
+; Title     : Serializer for 100BASE-FX
+;             clock 250MHz, 125Mbps, 10bit
+; Date      : 2022/01/09
+; Design    : kingyo
+;***************************************************
+
+.program ser_100base_fx
+    pull                ; pull IDLE pattern
+    mov X, OSR
+.wrap_target
+    pull noblock        ; If TX FIFO is Empty then send X register(IDLE pattern)
+    out pins, 1 [1]
+    out pins, 1 [1]
+    out pins, 1 [1]
+    out pins, 1 [1]
+    out pins, 1 [1]
+    out pins, 1 [1]
+    out pins, 1 [1]
+    out pins, 1 [1]
+    out pins, 1 [1]
+    out pins, 1
+.wrap
+
+
+% c-sdk {
+
+    static inline void ser_100base_fx_program_init(PIO pio, uint sm, uint offset, uint pin_tx)
+    {
+        pio_sm_set_pins_with_mask(pio, sm, 1u << pin_tx, 1u << pin_tx);
+        pio_sm_set_pindirs_with_mask(pio, sm, 1u << pin_tx, 1u << pin_tx);
+        pio_gpio_init(pio, pin_tx);
+
+        gpio_set_drive_strength(pin_tx, GPIO_DRIVE_STRENGTH_12MA);
+        gpio_set_slew_rate(pin_tx, GPIO_SLEW_RATE_FAST);
+
+        pio_sm_config c = ser_100base_fx_program_get_default_config(offset);
+
+        sm_config_set_out_shift(&c, true, false, 32);
+        sm_config_set_out_pins(&c, pin_tx, 1);
+
+        sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);
+        sm_config_set_clkdiv(&c, 1);
+
+        pio_sm_init(pio, sm, offset, &c);
+
+        // Set 100BASE-FX IDLE pattern
+        pio_sm_put_blocking(pio, sm, 0b0101010101);
+        
+        pio_sm_set_enabled(pio, sm, true);
+    }
+
+    static inline void ser_100base_fx_tx_10b(PIO pio, uint sm, uint32_t txdata)
+    {
+        pio_sm_put_blocking(pio, sm, txdata);
+    }
+
+%}
