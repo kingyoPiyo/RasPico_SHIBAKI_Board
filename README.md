@@ -23,6 +23,8 @@ Raspberry Pi Pico で色々やる基板です。
 | Link | 説明 |
 | ---- | ---- |
 | [hwtest](firmware/hwtest/ "hwtest") | ハードウェアテスト用。<br> リセット直後にUSBシリアルから各ピンの電圧レベルやSFPモジュールのI2C読み出しデータ（Addr 0x50）等が出力されます。SW0押下でSFP0ポートからUDPパケットを100BASE-FXでブロードキャストします。SFP1の送受信は実装中... |
+| [vban](firmware/vban/ "vban") | RasPico ADC + VBAN Protocol サンプル<br> GP26(ADC0), GP27(ADC1) からオーディオ信号を入力すると、方チャンネル44.1kHzでサンプリングされてVBANプロトコルに載せてストリーミング送信します。 |
+
 
 ## 回路図
 [Schematic.pdf](doc/schematic.pdf "Schematic")
