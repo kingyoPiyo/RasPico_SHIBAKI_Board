@@ -42,4 +42,7 @@
 #define HW_PINNUM_GPIO18        (18)
 #define HW_PINNUM_GPIO19        (19)
 
+// DCDC
+#define HW_PINNUM_DCDC_PS       (23)
+
 #endif //__HW_H__

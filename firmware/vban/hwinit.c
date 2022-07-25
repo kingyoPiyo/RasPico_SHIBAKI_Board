@@ -114,4 +114,9 @@ void hw_init()
     gpio_set_dir(HW_PINNUM_GPIO19, GPIO_IN);
     gpio_pull_down(HW_PINNUM_GPIO19);
 
+    // DCDC
+    gpio_init(HW_PINNUM_DCDC_PS);
+    gpio_set_dir(HW_PINNUM_DCDC_PS, GPIO_OUT);
+    gpio_put(HW_PINNUM_DCDC_PS, true);              // true:PWM mode, false:PFM mode
+                                                    // PWM is lower noise!
 }
