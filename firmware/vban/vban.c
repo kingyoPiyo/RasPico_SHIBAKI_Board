@@ -15,6 +15,7 @@
 #include "hardware/adc.h"
 #include "ser_100base_fx.pio.h"
 
+#define VBAN_X4_OVERSAMPL_ON    // x4 Oversampling
 
 #define VBAN_SR_MAXNUMBER           21
 #define VBAN_PROTOCOL_AUDIO         0x00
@@ -78,15 +79,46 @@ static int16_t adc_buf[2][DEF_VBAN_PCM_SIZE/2];
 static void adc_irq_handler (void)
 {
     static uint8_t lp = 0;
+    static uint8_t os = 0;
+    static int16_t l_tmp = 0;
+    static int16_t r_tmp = 0;
 
     gpio_put(HW_PINNUM_SMAOUT0, true);
-    
-    adc_buf[sel][lp++] = (adc_fifo_get() - 2048) * 8;
 
+#ifdef VBAN_X4_OVERSAMPL_ON
+    // x4 oversampling
+    switch (os) {
+        case 0:
+            l_tmp = adc_fifo_get(); os++; break;
+        case 1:
+            r_tmp = adc_fifo_get(); os++; break;
+        case 2:
+            l_tmp += adc_fifo_get(); os++; break;
+        case 3:
+            r_tmp += adc_fifo_get(); os++; break;
+        case 4:
+            l_tmp += adc_fifo_get(); os++; break;
+        case 5:
+            r_tmp += adc_fifo_get(); os++; break;
+        case 6:
+            l_tmp += adc_fifo_get(); os++; break;
+        case 7:
+            r_tmp += adc_fifo_get(); os = 0;
+            adc_buf[sel][lp++] = (l_tmp - 8192) * 2;
+            adc_buf[sel][lp++] = (r_tmp - 8192) * 2;
+            if (lp == 0) {
+                sel = 1 - sel;
+                flg = 1;
+            }
+            break;
+    }
+#else
+    adc_buf[sel][lp++] = (adc_fifo_get() - 2048) * 8;
     if (lp == 0) {
         sel = 1 - sel;
         flg = 1;
     }
+#endif
 
     gpio_put(HW_PINNUM_SMAOUT0, false);
 }
@@ -135,7 +167,11 @@ void vban_init(void)
     // adc_gpio_init(26);
     // adc_gpio_init(27);
     adc_select_input(0);                        // Start is ADC0(L-Ch)
-    adc_set_clkdiv((48000000.0/(44100*2))-1.0); // 44.1kHz * 2CH Round-Robin
+#ifdef VBAN_X4_OVERSAMPL_ON
+    adc_set_clkdiv((48000000.0/(44100*8))-1.0); // 44.1kHz x 4 * 2CH = 352.8kS/s Round-Robin
+#else
+    adc_set_clkdiv((48000000.0/(44100*2))-1.0); // 44.1kHz * 2CH = 88.2kS/s Round-Robin
+#endif
     adc_set_round_robin(0b00000011);            // ADC0 & ADC1
 
     // Set IRQ handler
