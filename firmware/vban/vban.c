@@ -61,7 +61,7 @@ static uint8_t udp_payload[DEF_UDP_PAYLOAD_SIZE] = {0};
 static uint32_t DMA_SER_WR0;
 
 static uint8_t sel = 0;
-static uint32_t flg;
+static uint32_t flg = 0;
 
 
 typedef struct {
@@ -76,7 +76,7 @@ static int16_t adc_buf[2][DEF_VBAN_PCM_SIZE/2];
 
 
 // ADC Conversion Interrupt
-static void adc_irq_handler (void)
+static void __time_critical_func(adc_irq_handler) (void)
 {
     static uint8_t lp = 0;
     static uint8_t os = 0;
@@ -130,6 +130,8 @@ void vban_init(void)
     PIO pio_ser_wr = pio0;
     uint sm0 = 0;
 
+    udp_init();
+
     // VBAN Header
     vban_payload.header.vban = ('N' << 24) + ('A' << 16) + ('B' << 8) + ('V' << 0);
     vban_payload.header.format_SR = 16;      // 44.1kHz
@@ -161,11 +163,7 @@ void vban_init(void)
         false                   // Don't start yet
     );
 
-
     // ADC Settings
-    // adc_init();
-    // adc_gpio_init(26);
-    // adc_gpio_init(27);
     adc_select_input(0);                        // Start is ADC0(L-Ch)
 #ifdef VBAN_X4_OVERSAMPL_ON
     adc_set_clkdiv((48000000.0/(44100*8))-1.0); // 44.1kHz x 4 * 2CH = 352.8kS/s Round-Robin
@@ -188,6 +186,8 @@ void vban_init(void)
     );
 
     adc_irq_set_enabled(true);
+    irq_set_priority(ADC_IRQ_FIFO, 0);
+    sleep_ms(1);    // A nap will help you concentrate.
     adc_run(true);  // ADC Free running start!
 }
 

@@ -29,12 +29,11 @@ int main()
 {
     stdio_init_all();
     hw_init();
-    udp_init();
-    vban_init();
-
+    
     // L-tika ~~
     add_repeating_timer_ms(-500, repeating_timer_callback, NULL, &timer);
-    
+
+    vban_init();
     while (true)
     {
         vban_main();
