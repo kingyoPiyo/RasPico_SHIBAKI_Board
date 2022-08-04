@@ -15,7 +15,17 @@ const static uint32_t tbl_nrzi[64] = {
 static uint32_t crc_table[256];
 static uint8_t  data_8b[DEF_UDP_BUF_SIZE*2];
 static uint8_t  data_5b[(DEF_UDP_BUF_SIZE*2)+4];
-static uint16_t ip_identifier;
+static uint16_t ip_identifier = 0;
+static uint32_t ip_chk_sum1, ip_chk_sum2, ip_chk_sum3;
+
+// Etherent Frame
+static const uint16_t  eth_type            = 0x0800; // IP
+
+// IPv4 Header
+static const uint8_t   ip_version          = 4;      // IP v4
+static const uint8_t   ip_head_len         = 5;
+static const uint8_t   ip_type_of_service  = 0;
+static const uint16_t  ip_total_len        = 20 + DEF_UDP_LEN;
 
 
 static void _make_crc_table(void) {
@@ -35,27 +45,16 @@ void udp_init(void) {
 
 
 void udp_packet_gen(uint32_t *buf, uint8_t *udp_payload) {
-    // Etherent Frame
-    const uint16_t    eth_type            = 0x0800; // IP
-
-    // UDP Header
-          uint16_t    udp_chksum          = 0;
-
-    // IPv4 Header
-    const uint8_t     ip_version          = 4;      // IP v4
-    const uint8_t     ip_head_len         = 5;
-    const uint8_t     ip_type_of_service  = 0;
-    const uint16_t    ip_total_len        = 20 + DEF_UDP_LEN;
+    uint16_t udp_chksum = 0;
+    uint32_t i, j, idx = 0, ans;
 
     // Calculate the ip check sum
-    const uint32_t    ip_chk_sum1 = 0x0000C512 + ip_identifier + ip_total_len + (DEF_IP_ADR_SRC1 << 8) + DEF_IP_ADR_SRC2 + (DEF_IP_ADR_SRC3 << 8) + DEF_IP_ADR_SRC4 +
-                                    (DEF_IP_DST_DST1 << 8) + DEF_IP_DST_DST2 + (DEF_IP_DST_DST3 << 8) + DEF_IP_DST_DST4;
-    const uint32_t    ip_chk_sum2 = (ip_chk_sum1 & 0x0000FFFF) + (ip_chk_sum1 >> 16);
-    const uint32_t    ip_chk_sum3 = ~((ip_chk_sum2 & 0x0000FFFF) + (ip_chk_sum2 >> 16));
+    ip_chk_sum1 = 0x0000C512 + ip_identifier + ip_total_len + (DEF_IP_ADR_SRC1 << 8) + DEF_IP_ADR_SRC2 + (DEF_IP_ADR_SRC3 << 8) + DEF_IP_ADR_SRC4 +
+                  (DEF_IP_DST_DST1 << 8) + DEF_IP_DST_DST2 + (DEF_IP_DST_DST3 << 8) + DEF_IP_DST_DST4;
+    ip_chk_sum2 = (ip_chk_sum1 & 0x0000FFFF) + (ip_chk_sum1 >> 16);
+    ip_chk_sum3 = ~((ip_chk_sum2 & 0x0000FFFF) + (ip_chk_sum2 >> 16));
 
     //////////////////////////////////////////////////////
-    uint32_t    i, j, idx = 0, ans;
-
     ip_identifier++;
 
     // Preamble
@@ -138,7 +137,7 @@ void udp_packet_gen(uint32_t *buf, uint8_t *udp_payload) {
     /////////////////////////////////////////////////
     data_5b[0]  = 0b11000;  // J
     data_5b[1]  = 0b10001;  // K
-    for (i = 2, j = 2; i < idx; i++) {
+    for (i = 0, j = 2; i < idx; i++) {
         data_5b[j++] = tbl_4b5b[(data_8b[i] >> 0) & 0x0F];
         data_5b[j++] = tbl_4b5b[(data_8b[i] >> 4) & 0x0F];
     }
