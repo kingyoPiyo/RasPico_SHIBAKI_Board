@@ -1,11 +1,12 @@
 #include "udp.h"
+#include "pico/stdlib.h"
 
 // 4B5B convert table
-const static uint8_t tbl_4b5b[16] = {0b11110, 0b01001, 0b10100, 0b10101, 0b01010, 0b01011, 0b01110, 0b01111,
+const static uint8_t __not_in_flash("tbl_4b5b") tbl_4b5b[16] = {0b11110, 0b01001, 0b10100, 0b10101, 0b01010, 0b01011, 0b01110, 0b01111,
                                      0b10010, 0b10011, 0b10110, 0b10111, 0b11010, 0b11011, 0b11100, 0b11101};
 
 // NRZI convert table
-const static uint32_t tbl_nrzi[64] = {
+const static uint32_t __not_in_flash("tbl_nrzi") tbl_nrzi[64] = {
          0, 16, 24,  8, 28, 12,  4, 20, 30, 14,  6, 22,  2, 18, 26, 10,
         31, 15,  7, 23,  3, 19, 27, 11,  1, 17, 25,  9, 29, 13,  5, 21,
         31, 15,  7, 23,  3, 19, 27, 11,  1, 17, 25,  9, 29, 13,  5, 21,
@@ -44,7 +45,7 @@ void udp_init(void) {
 }
 
 
-void udp_packet_gen(uint32_t *buf, uint8_t *udp_payload) {
+void __time_critical_func(udp_packet_gen)(uint32_t *buf, uint8_t *udp_payload) {
     uint16_t udp_chksum = 0;
     uint32_t i, j, idx = 0, ans;
 
@@ -115,7 +116,7 @@ void udp_packet_gen(uint32_t *buf, uint8_t *udp_payload) {
     data_8b[idx++] = (udp_chksum >>  0) & 0xFF;
     // UDP payload
     for (i = 0; i < DEF_UDP_PAYLOAD_SIZE; i++) {
-        data_8b[idx++] = *(udp_payload + i);
+        data_8b[idx++] = udp_payload[i];
     }
 
     ///////////////////////////////////////////////////

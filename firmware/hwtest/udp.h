@@ -2,6 +2,7 @@
 #define __UDP_H__
 
 #include <stdint.h>
+#include "pico/stdlib.h"
 
 // Buffer size config
 #define DEF_UDP_PAYLOAD_SIZE    (64)
@@ -40,6 +41,6 @@
 
 
 void udp_init(void);
-void udp_packet_gen(uint32_t *buf, uint8_t *udp_payload);
+void __time_critical_func(udp_packet_gen)(uint32_t *buf, uint8_t *udp_payload);
 
 #endif //__UDP_H__
