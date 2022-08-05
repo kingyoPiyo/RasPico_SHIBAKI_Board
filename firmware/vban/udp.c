@@ -6,7 +6,7 @@ const static uint8_t __not_in_flash("tbl_4b5b") tbl_4b5b[16] = {0b11110, 0b01001
                                      0b10010, 0b10011, 0b10110, 0b10111, 0b11010, 0b11011, 0b11100, 0b11101};
 
 // NRZI convert table
-const static uint32_t __not_in_flash("tbl_nrzi") tbl_nrzi[64] = {
+const static uint8_t __not_in_flash("tbl_nrzi") tbl_nrzi[64] = {
          0, 16, 24,  8, 28, 12,  4, 20, 30, 14,  6, 22,  2, 18, 26, 10,
         31, 15,  7, 23,  3, 19, 27, 11,  1, 17, 25,  9, 29, 13,  5, 21,
         31, 15,  7, 23,  3, 19, 27, 11,  1, 17, 25,  9, 29, 13,  5, 21,
