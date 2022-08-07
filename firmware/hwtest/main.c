@@ -48,7 +48,7 @@ static void __time_critical_func(ser_10b_irq)(void)
 int main()
 {
     uint32_t DMA_SER_WR0;
-    uint32_t tx_buf_udp[DEF_UDP_BUF_SIZE+2] = {0};
+    uint32_t tx_buf_udp[DEF_UDP_BUF_SIZE+1] = {0};
     uint8_t udp_payload[DEF_UDP_PAYLOAD_SIZE] = {0};
     uint32_t lp_cnt = 0;
     uint offset = 0;
@@ -91,7 +91,7 @@ int main()
         &c0,                    // The configuration we just created
         &pio_ser_wr->txf[0],    // Destination address
         tx_buf_udp,             // Source address
-        (DEF_UDP_BUF_SIZE+2),   // Number of transfers
+        (DEF_UDP_BUF_SIZE+1),   // Number of transfers
         false                   // Don't start yet
     );
     

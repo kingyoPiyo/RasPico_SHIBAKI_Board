@@ -55,7 +55,7 @@
 
 
 static char stream_name[16] = "Stream1";
-static uint32_t tx_buf_udp[DEF_UDP_BUF_SIZE+2] = {0};
+static uint32_t tx_buf_udp[DEF_UDP_BUF_SIZE+1] = {0};
 static uint8_t udp_payload[DEF_UDP_PAYLOAD_SIZE] = {0};
 
 static uint32_t DMA_SER_WR0;
@@ -159,7 +159,7 @@ void vban_init(void)
         &c0,                    // The configuration we just created
         &pio_ser_wr->txf[0],    // Destination address
         tx_buf_udp,             // Source address
-        (DEF_UDP_BUF_SIZE+2),   // Number of transfers
+        (DEF_UDP_BUF_SIZE+1),   // Number of transfers
         false                   // Don't start yet
     );
 
