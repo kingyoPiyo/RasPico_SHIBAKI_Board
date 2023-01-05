@@ -5,6 +5,19 @@
 #include <stdint.h>
 #include "pico/stdlib.h"
 
+// == DMA settings ==
+// If 1, using DMA to copy payload and calculate CRC(FCS). 
+// Using DMA increases the processing speed of "udp_packet_gen()".
+// Performance example:
+//  ----------------------------------------------------
+//  Payload size [Byte]   use DMA[us]   not use DMA[us]
+//  ----------------------------------------------------
+//                  540          58.5             109.3
+//  ----------------------------------------------------
+#ifndef UDP_DMA_EN
+#define UDP_DMA_EN 1
+#endif
+
 // Buffer size config
 #define DEF_UDP_PAYLOAD_SIZE    (DEF_VBAN_HEAD_SIZE+DEF_VBAN_PCM_SIZE)
 // Ethernet
