@@ -56,13 +56,11 @@
 
 static char stream_name[16] = "Stream1";
 static uint32_t tx_buf_udp[DEF_UDP_BUF_SIZE+1] = {0};
-static uint8_t udp_payload[DEF_UDP_PAYLOAD_SIZE] = {0};
 
-static uint32_t DMA_SER_WR0;
+static uint32_t dma_ch_100base_fx;
 
 static uint8_t sel = 0;
 static uint32_t flg = 0;
-
 
 typedef struct {
     T_VBAN_HEADER header;
@@ -148,14 +146,14 @@ void vban_init(void)
     ser_100base_fx_program_init(pio_ser_wr, sm0, offset, HW_PINNUM_SFP0_TXD);
 
     // DMA channel setting (SFP0)
-    DMA_SER_WR0 = dma_claim_unused_channel(true);
-    dma_channel_config c0 = dma_channel_get_default_config(DMA_SER_WR0);
+    dma_ch_100base_fx = dma_claim_unused_channel(true);
+    dma_channel_config c0 = dma_channel_get_default_config(dma_ch_100base_fx);
     channel_config_set_dreq(&c0, pio_get_dreq(pio_ser_wr, sm0, true));
     channel_config_set_transfer_data_size(&c0, DMA_SIZE_32);
     channel_config_set_read_increment(&c0, true);
     channel_config_set_write_increment(&c0, false);
     dma_channel_configure (
-        DMA_SER_WR0,            // Channel to be configured
+        dma_ch_100base_fx,      // Channel to be configured
         &c0,                    // The configuration we just created
         &pio_ser_wr->txf[0],    // Destination address
         tx_buf_udp,             // Source address
@@ -208,7 +206,7 @@ void vban_main(void)
         udp_packet_gen(tx_buf_udp, (uint8_t *)&vban_payload);
 
         // DMA Start (100BASE-FX)
-        dma_channel_set_read_addr(DMA_SER_WR0, tx_buf_udp, true);
+        dma_channel_set_read_addr(dma_ch_100base_fx, tx_buf_udp, true);
 
         gpio_put(HW_PINNUM_SMAOUT1, false);
     }
