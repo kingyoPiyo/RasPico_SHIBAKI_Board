@@ -27,7 +27,9 @@ target_link_libraries(${target_name} PRIVATE
     )
 
 # enable usb output, disable uart output
-pico_enable_stdio_usb(RasPico_SHIBAKI_Board 1)
-pico_enable_stdio_uart(RasPico_SHIBAKI_Board 0)
+pico_enable_stdio_usb(${target_name} 1)
+pico_enable_stdio_uart(${target_name} 0)
+
+#pico_set_binary_type(${target_name} copy_to_ram)
 
 pico_add_extra_outputs(${target_name})
