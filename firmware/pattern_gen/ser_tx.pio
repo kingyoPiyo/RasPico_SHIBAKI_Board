@@ -1,0 +1,31 @@
+;***************************************************
+; Title     : 32bit Serializer
+; Date      : 2023/12/14
+; Design    : kingyo
+;***************************************************
+
+.program ser_tx
+    out pins, 1
+
+% c-sdk {
+
+    static inline void ser_tx_program_init(PIO pio, uint sm, uint offset, uint pin_tx)
+    {
+        pio_sm_set_pins_with_mask(pio, sm, 1u << pin_tx, 1u << pin_tx);
+        pio_sm_set_pindirs_with_mask(pio, sm, 1u << pin_tx, 1u << pin_tx);
+        pio_gpio_init(pio, pin_tx);
+
+        gpio_set_drive_strength(pin_tx, GPIO_DRIVE_STRENGTH_12MA);
+        gpio_set_slew_rate(pin_tx, GPIO_SLEW_RATE_FAST);
+
+        pio_sm_config c = ser_tx_program_get_default_config(offset);
+        sm_config_set_out_shift(&c, true, true, 32);                    // Shift OSR to Right, Autopull is enable
+        sm_config_set_out_pins(&c, pin_tx, 1);
+
+        sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_TX);                  // Total FIFO size = 8 words
+        sm_config_set_clkdiv(&c, 1);                                    // Serial rate = clk / 1
+
+        pio_sm_init(pio, sm, offset, &c);
+    }
+
+%}
