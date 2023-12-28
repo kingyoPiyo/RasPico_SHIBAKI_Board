@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(target_name vban)
+
 include(pico_sdk_import.cmake)
-project(RasPico_SHIBAKI_Board)
-set(target_name RasPico_SHIBAKI_Board)
+project(${target_name})
 
 pico_sdk_init()
 
