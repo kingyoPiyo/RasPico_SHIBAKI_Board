@@ -80,6 +80,8 @@ int main()
     // SMを同期して起動
     pio_enable_sm_mask_in_sync(pio_ser_wr, 0b11);
 
+    // 動作表示
+    gpio_put(HW_PINNUM_LED0, true);
 
     // ser_bufを途切れなく連続転送する
     while (true) {
