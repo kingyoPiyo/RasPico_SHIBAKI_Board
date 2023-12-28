@@ -1,5 +1,6 @@
 #include "hwtest.h"
 #include "pico/stdlib.h"
+#include <stdio.h>
 #include <stdint.h>
 #include "hw.h"
 #include "hardware/i2c.h"
