@@ -57,15 +57,16 @@ int main()
 
 
     // パターンデータの生成
+    // データは右シフト（LSBから送信）で送出
     for (int i = 0; i < DEF_BUF_SIZE; i++) {
         ser_buf[0][i] = 0x55555555;
     }
-    ser_buf[0][DEF_BUF_SIZE-1] = 0x00FF00FF;
+    ser_buf[0][DEF_BUF_SIZE-1] = 0x0F555555;
 
     for (int i = 0; i < DEF_BUF_SIZE; i++) {
         ser_buf[1][i] = 0x00000000;
     }
-    ser_buf[1][DEF_BUF_SIZE-1] = 0x000000FF;
+    ser_buf[1][DEF_BUF_SIZE-1] = 0x0F000000;
 
     
     // 初回の転送開始位相を揃えるための時間稼ぎとして、
